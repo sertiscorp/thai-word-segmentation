@@ -1,6 +1,6 @@
 # Thai word segmentation with bi-directional RNN
 
-Please see the [Sertis blog](https://sertiscorp.com/thai-word-segmentation-with-bi-directional-rnn/) for the description
+Please see the [Sertis blog](https://sertiscorp.com/thai-word-segmentation-with-bi-directional_rnn/) for the description
 of the model and usage.
 
 ## Requirements
