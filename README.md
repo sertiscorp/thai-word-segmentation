@@ -1,7 +1,9 @@
 # Thai word segmentation with bi-directional RNN
 
-Please see the [Sertis blog](https://sertiscorp.com/thai-word-segmentation-with-bi-directional_rnn/) for the description
-of the model and usage.
+This is code for preprocessing data, training model and inferring word segment boundaries of Thai text
+with bi-directional recurrent neural network. The model provides precision of 99.04%, recall of 99.31%
+and F1 score of 99.18%. Please see the [blog post](https://sertiscorp.com/thai-word-segmentation-with-bi-directional_rnn/)
+for the detailed description of the model.
 
 ## Requirements
 
@@ -19,6 +21,23 @@ of the model and usage.
 * `thainlplib/labeller.py`: Methods for preprocessing the corpus
 * `thainlplib/model.py`: Methods for training the model
 
-Note that the InterBEST 2009 corpus is not included, but can be downloaded from [https://thailang.nectec.or.th/downloadcenter/](https://thailang.nectec.or.th/downloadcenter/).
+Note that the InterBEST 2009 corpus is not included, but can be downloaded from the
+[NECTEC website](https://thailang.nectec.or.th/downloadcenter/).
+
+## Usage
+
+To try the prediction demo, run `python3 predict_example.py`.
+To preprocess the data and train the model, put the data files under `data` directory and then
+run `python3 preprocess.py` and `python3 train.py`.
+
+## Contributors
+
+* Jussi Jousimo
+* Natsuda Laokulrat
+* Ben Carr
+
+## License
+
+GPL 3.0
 
 Copyright (c) Sertis Co., Ltd., 2017
