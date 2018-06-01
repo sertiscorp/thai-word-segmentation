@@ -2,7 +2,6 @@ from thainlplib import ThaiWordSegmentLabeller
 from os import listdir
 from os.path import isfile, join
 import random
-import re
 import tensorflow as tf
 
 # Split tokens
@@ -44,7 +43,6 @@ def preprocess_files(input_files, training_output_file, validation_output_file, 
             x, y = process_line(line)
             p = random.random()
             example = make_sequence_example(x, y)
-            training_writer.write(example.SerializeToString())
             if p <= training_proportion:
                 training_writer.write(example.SerializeToString())
             else:

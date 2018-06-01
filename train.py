@@ -12,8 +12,8 @@ state_size = 128
 learning_rate = 0.001
 
 # Other configuration
-buffer_size = 150000 # Read the whole data to CPU memory
-batch_size = 128 # Lower/increase this depending on your GPU memory size
+buffer_size = 150000 # Read all data to CPU memory
+batch_size = 112 # Lower/increase this depending on your GPU memory size
 validate_every_n_iterations = 100
 checkpoint_path = 'checkpoints'
 

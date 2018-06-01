@@ -123,7 +123,7 @@ class ThaiWordSegmentationModel:
                                                       validation_dataset=validation_dataset)
         # Break the batch into a batch of each variable
         self.tf_lengths_batch, self.tf_tokens_batch, self.tf_labels_batch = tf_batch
-        
+
         # Build the neural graph
         self.tf_loss, self.tf_masked_prediction, self.tf_masked_labels, self.tf_optimizer, \
             self.tf_global_step, self.tf_learning_rate, self.tf_training = \
@@ -206,12 +206,12 @@ class ThaiWordSegmentationModel:
             
             saver = tf.train.Saver()
             saver.restore(session, checkpoint_path)
-            
-            inputs = {'inputs': tf.saved_model.utils.build_tensor_info(tf.identity(self.tf_tokens_batch, 'inputs')),
-                      'lengths': tf.saved_model.utils.build_tensor_info(tf.identity(self.tf_lengths_batch, 'lengths')),
-                      'training': tf.saved_model.utils.build_tensor_info(tf.identity(self.tf_training, 'training'))}
-            outputs = {'outputs': tf.saved_model.utils.build_tensor_info(tf.identity(self.tf_masked_prediction, 'outputs'))}
-            
+
+            inputs = {'inputs': tf.saved_model.utils.build_tensor_info(self.tf_tokens_batch),
+                      'lengths': tf.saved_model.utils.build_tensor_info(self.tf_lengths_batch),
+                      'training': tf.saved_model.utils.build_tensor_info(self.tf_training)}
+            outputs = {'outputs': tf.saved_model.utils.build_tensor_info(self.tf_masked_prediction)}
+
             builder = tf.saved_model.builder.SavedModelBuilder(saved_model_path)
             prediction_signature = (tf.saved_model.signature_def_utils.build_signature_def(
                 inputs = inputs,
