@@ -1,16 +1,17 @@
-from thainlplib import ThaiWordSegmentLabeller
-from thainlplib.model import ThaiWordSegmentationModel
-
 import tensorflow as tf
 import fire
 import pandas as pd
 import numpy as np
 import preprocess
+import os
 
-saved_model_path = 'saved_model'
+from tqdm import tqdm
 
+from thainlplib import ThaiWordSegmentLabeller
+from thainlplib.model import ThaiWordSegmentationModel
 
-BATCH_SIZE = 500
+SAVED_MODEL_PATH = 'saved_model'
+TMP_FILE = '.tmptfrecord'
 
 
 def build_sample(txt):
@@ -20,28 +21,28 @@ def build_sample(txt):
     return preprocess.make_sequence_example(encoded_txt, dummy_label)
 
 
-def main(input_csv, output_csv, separator="|", verbose=0):
-    df_input = pd.read_csv(input_csv, encoding='utf-8', sep=';', names=['txt'])[:2000]
+def main(input_path, output_path, separator="|", batch_size=250):
+    df_input = pd.read_csv(input_path, encoding='utf-8', sep=';', names=['txt'])
 
     texts = df_input.txt.values
 
-    print('Processing samples')
+    print('Retrieving samples')
     samples = df_input.txt.apply(build_sample).values
 
     options = tf.python_io.TFRecordOptions(compression_type=tf.python_io.TFRecordCompressionType.ZLIB)
 
     # todo: tmp file
-    training_writer = tf.python_io.TFRecordWriter('sample.tfrecord', options=options)
+    training_writer = tf.python_io.TFRecordWriter(TMP_FILE, options=options)
     for s in samples:
         training_writer.write(s.SerializeToString())
     training_writer.close()
 
     tokenized_texts = []
 
-    no_batches = int(np.ceil(len(texts)*1.0 / BATCH_SIZE))
+    no_batches = int(np.ceil(len(texts) * 1.0 / batch_size))
 
     with tf.Session() as sess:
-        model = tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], saved_model_path)
+        model = tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], SAVED_MODEL_PATH)
         signature = model.signature_def[tf.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY]
         graph = tf.get_default_graph()
 
@@ -51,20 +52,19 @@ def main(input_csv, output_csv, separator="|", verbose=0):
 
         g_handle = graph.get_tensor_by_name('Placeholder:0')
 
-        dataset = tf.data.TFRecordDataset(['sample.tfrecord'], compression_type="ZLIB") \
+        dataset = tf.data.TFRecordDataset([TMP_FILE], compression_type="ZLIB") \
             .map(ThaiWordSegmentationModel._parse_record) \
-            .padded_batch(BATCH_SIZE, padded_shapes=([], [None], [None]))
+            .padded_batch(batch_size, padded_shapes=([], [None], [None]))
 
-        iter = dataset.make_initializable_iterator()
+        data_iter = dataset.make_initializable_iterator()
 
-        sess.run(iter.initializer)
+        sess.run(data_iter.initializer)
 
-        ehandle = sess.run(iter.string_handle())
+        data_handle = sess.run(data_iter.string_handle())
 
         probs = []
-        for j in range(no_batches):
-            print('Batch-%d' %(j+1))
-            prob, seq = sess.run([g_outputs, g_lengths], feed_dict={g_training: False, g_handle: ehandle})
+        for j in tqdm(range(no_batches)):
+            prob, seq = sess.run([g_outputs, g_lengths], feed_dict={g_training: False, g_handle: data_handle})
 
             st_idx = 0
             for l in (seq):
@@ -78,7 +78,9 @@ def main(input_csv, output_csv, separator="|", verbose=0):
         tokenized_text = separator.join(tokenize(t, p))
         tokenized_texts.append(tokenized_text)
 
-    pd.DataFrame(tokenized_texts).to_csv(output_csv, index=False)
+    pd.DataFrame(tokenized_texts).to_csv(output_path, index=False, header=False)
+
+    os.remove(TMP_FILE)
 
 
 def tokenize(s, probs):
