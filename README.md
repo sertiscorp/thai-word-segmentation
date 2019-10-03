@@ -32,6 +32,7 @@ To preprocess the data, train the model and save the model, put the data files u
 
 ## Bug fixes and updates
 
+* 3/10/2019: Switched license to MIT
 * 1/6/2018: Fixed bug in splitting data incorrectly in `preprocess.py`. The model was
 retrained achieving precision 98.94, recall 99.28 and F1 score 99.11. Thank you Ekkalak
 Thongthanomkul for the bug report.
@@ -47,6 +48,6 @@ Thongthanomkul for the bug report.
 
 ## License
 
-GPL 3.0
+MIT
 
-Copyright (c) Sertis Co., Ltd., 2017
+Copyright (c) Sertis Co., Ltd., 2019
