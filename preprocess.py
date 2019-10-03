@@ -57,15 +57,16 @@ def flatten_list(l):
 def list_files(paths):
     return flatten_list([[path + '/' + file for file in listdir(path) if isfile(join(path, file))] for path in paths])
 
-# Download and store the BEST corpus into data directory first
-# Read and shuffle input files
-files = list_files(['data/article', 'data/encyclopedia', 'data/news', 'data/novel'])
-random.shuffle(files)
+if __name__ == '__main__':
+    # Download and store the BEST corpus into data directory first
+    # Read and shuffle input files
+    files = list_files(['data/article', 'data/encyclopedia', 'data/news', 'data/novel'])
+    random.shuffle(files)
 
-# Set the locations of the output files here
-training_data_file = '/tmp/training.tf_record'
-validation_data_file = '/tmp/validation.tf_record'
+    # Set the locations of the output files here
+    training_data_file = '/tmp/training.tf_record'
+    validation_data_file = '/tmp/validation.tf_record'
 
-# Preprocess and split each sentence to training and validation files
-preprocess_files(files, training_data_file, validation_data_file, .9)
-print("Done")
+    # Preprocess and split each sentence to training and validation files
+    preprocess_files(files, training_data_file, validation_data_file, .9)
+    print("Done")

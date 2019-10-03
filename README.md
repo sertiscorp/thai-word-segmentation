@@ -20,6 +20,7 @@ for the detailed description of the model.
 * `saved_model`: Pretrained model weights
 * `thainlplib/labeller.py`: Methods for preprocessing the corpus
 * `thainlplib/model.py`: Methods for training the model
+* `thainlp_tokenizer.py`: A command line script for bulk tokenization.
 
 Note that the InterBEST 2009 corpus is not included, but can be downloaded from the
 [NECTEC website](https://thailang.nectec.or.th/downloadcenter/).
@@ -29,6 +30,15 @@ Note that the InterBEST 2009 corpus is not included, but can be downloaded from 
 To try the prediction demo, run `python3 predict_example.py`.
 To preprocess the data, train the model and save the model, put the data files under
 `data` directory and then run `python3 preprocess.py` and `python3 train.py`.
+
+### Command
+```
+# Note: the input and the output files are one-column csv files.
+
+> python thainlp_tokenizer.py \
+    --input-path sentences.csv \
+    --output-path tokenized_sentences.csv
+```
 
 ## Bug fixes and updates
 
